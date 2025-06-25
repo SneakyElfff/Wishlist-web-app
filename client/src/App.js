@@ -16,7 +16,7 @@ const App = () => {
   }, []);
 
   const fetchGifts = async () => {
-    const response = await axios.get('/api/gifts');
+    const response = await axios.get('http://localhost:5001/api/gifts');
     setGifts(response.data);
     setSelectedGifts([]); // Clear selection on refresh
   };
@@ -33,7 +33,7 @@ const App = () => {
     for (const id of selectedGifts) {
       const gift = gifts.find((g) => g._id === id);
       if (!gift.reserved) {
-        await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
+        await axios.post(`http://localhost:5001/api/gifts/${id}/reserve`, { reservedBy: reserverName });
       }
     }
     setReserverName('');
@@ -74,7 +74,7 @@ const App = () => {
       return;
     }
     try {
-      await axios.post(`/api/gifts/${unreserveGiftId}/unreserve`, { reservedBy: unreserveName });
+      await axios.post(`http://localhost:5001/api/gifts/${unreserveGiftId}/unreserve`, { reservedBy: unreserveName });
       alert('Успех! Будем считать, что никто ничего не видел.');
       fetchGifts();
       closeHelpModal();
@@ -94,18 +94,18 @@ const App = () => {
 
   return (
       <div className="min-h-screen bg-gray-900 text-gray-100 p-6 font-sans">
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-white-400">Wish List</h1>
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-purple-400">Wish List</h1>
         <div className="flex flex-wrap items-center gap-4 mb-6 justify-center">
           <input
               type="text"
               placeholder="Ваше имя"
               value={reserverName}
               onChange={(e) => setReserverName(e.target.value)}
-              className="bg-gray-800 border border-gray-700 text-gray-100 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 transition w-64"
+              className="bg-gray-800 border border-gray-700 text-gray-100 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition w-64"
           />
           <button
               onClick={handleReserve}
-              className={`bg-cyan-600 text-white p-3 rounded-lg shadow-md hover:bg-cyan-700 transition ${!canReserve ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-green-600 text-white p-3 rounded-lg shadow-md hover:bg-green-700 transition ${!canReserve ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={!canReserve}
           >
             Застолбить
@@ -118,7 +118,7 @@ const App = () => {
           </button>
           <button
               onClick={openHelpModal}
-              className="bg-red-600 text-white p-3 rounded-lg shadow-md hover:bg-red-700 transition"
+              className="bg-teal-600 text-white p-3 rounded-lg shadow-md hover:bg-teal-700 transition"
           >
             Помогите
           </button>
@@ -151,7 +151,7 @@ const App = () => {
                     {gift.link ? (
                         <a
                             href={gift.link}
-                            className="text-blue-400 hover:text-blue-300 transition"
+                            className="text-purple-400 hover:text-purple-300 transition"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
@@ -175,9 +175,9 @@ const App = () => {
         </div>
 
         {isInfoModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto">
-              <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full my-4 mx-4 sm:mx-6 md:mx-8 text-gray-100 max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-4 text-white-400">Пояснение</h2>
+            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+              <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full text-gray-100">
+                <h2 className="text-2xl font-bold mb-4 text-purple-400">Пояснение</h2>
                 <p className="mb-4">
                   Добро пожаловать! Это своего рода помощник вам, мои любимые люди, в поисках скромного дара, который вы бы
                   могли захотеть преподнести вашей покорной слуге. Но помните, что я в любом случае буду рада абсолютно любому
@@ -192,12 +192,9 @@ const App = () => {
                   P.P.S. Очередность выстроена в порядке возникновения мозговых импульсов, а не согласно какой-либо из
                   стандартных сортировок.
                 </p>
-                <p className="mb-4">
-                  P.P.P.S. Некоторые варианты могут быть чуть более затратными, так что feel free to join forces.
-                </p>
                 <button
                     onClick={closeInfoModal}
-                    className="bg-purple-600 text-white p-3 rounded-lg shadow-md hover:bg-purple-700 transition"
+                    className="bg-blue-600 text-white p-3 rounded-lg shadow-md hover:bg-blue-700 transition"
                 >
                   Понятно
                 </button>
@@ -208,7 +205,7 @@ const App = () => {
         {isHelpModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
               <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full text-gray-100">
-                <h2 className="text-2xl font-bold mb-4 text-red-400">Передумали?</h2>
+                <h2 className="text-2xl font-bold mb-4 text-teal-400">Передумали?</h2>
                 <p className="mb-4">
                   Выберите застолбленную идею и введите имя для подтверждения чистоты ваших намерений. Имя должно совпадать с
                   введенным ранее.
@@ -216,7 +213,7 @@ const App = () => {
                 <select
                     value={unreserveGiftId}
                     onChange={(e) => setUnreserveGiftId(e.target.value)}
-                    className="bg-gray-700 border border-gray-600 text-gray-100 p-3 rounded-lg mb-4 w-full focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+                    className="bg-gray-700 border border-gray-600 text-gray-100 p-3 rounded-lg mb-4 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                 >
                   <option value="">Выберите забронированный подарок</option>
                   {gifts
@@ -232,12 +229,12 @@ const App = () => {
                     placeholder="Ваше имя"
                     value={unreserveName}
                     onChange={(e) => setUnreserveNameInput(e.target.value)}
-                    className="bg-gray-700 border border-gray-600 text-gray-100 p-3 rounded-lg mb-4 w-full focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+                    className="bg-gray-700 border border-gray-600 text-gray-100 p-3 rounded-lg mb-4 w-full focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                 />
                 <div className="flex gap-4">
                   <button
                       onClick={handleUnreserve}
-                      className="bg-red-600 text-white p-3 rounded-lg shadow-md hover:bg-red-700 transition"
+                      className="bg-teal-600 text-white p-3 rounded-lg shadow-md hover:bg-teal-700 transition"
                   >
                     Снять бронь
                   </button>
