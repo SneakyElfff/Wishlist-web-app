@@ -16,7 +16,7 @@ const App = () => {
   }, []);
 
   const fetchGifts = async () => {
-    const response = await axios.get('http://localhost:5001/api/gifts');
+    const response = await axios.get('/api/gifts');
     setGifts(response.data);
     setSelectedGifts([]); // Clear selection on refresh
   };
@@ -33,7 +33,7 @@ const App = () => {
     for (const id of selectedGifts) {
       const gift = gifts.find((g) => g._id === id);
       if (!gift.reserved) {
-        await axios.post(`http://localhost:5001/api/gifts/${id}/reserve`, { reservedBy: reserverName });
+        await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
       }
     }
     setReserverName('');
@@ -74,7 +74,7 @@ const App = () => {
       return;
     }
     try {
-      await axios.post(`http://localhost:5001/api/gifts/${unreserveGiftId}/unreserve`, { reservedBy: unreserveName });
+      await axios.post(`/api/gifts/${unreserveGiftId}/unreserve`, { reservedBy: unreserveName });
       alert('Успех! Будем считать, что никто ничего не видел.');
       fetchGifts();
       closeHelpModal();
