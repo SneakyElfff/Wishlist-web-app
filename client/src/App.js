@@ -175,8 +175,8 @@ const App = () => {
         </div>
 
         {isInfoModalOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-              <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full text-gray-100">
+            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto">
+              <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full my-4 mx-4 sm:mx-6 md:mx-8 text-gray-100 max-h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4 text-white-400">Пояснение</h2>
                 <p className="mb-4">
                   Добро пожаловать! Это своего рода помощник вам, мои любимые люди, в поисках скромного дара, который вы бы
