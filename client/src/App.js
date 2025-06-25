@@ -163,7 +163,7 @@ const App = () => {
                   </td>
                   <td className="border border-gray-600 p-3">
                     {gift.reserved ? (
-                        <span className="text-red-400">Забито</span>
+                        <span className="text-red-400">{gift.reservedBy}</span>
                     ) : (
                         <span className="text-green-400">Доступно</span>
                     )}
