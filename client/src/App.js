@@ -29,6 +29,7 @@ const App = () => {
     if (auth && savedLogin) {
       setIsAuthenticated(auth);
       setCurrentUser(savedLogin);
+      setReserverName(savedLogin)
     }
 
     setLoading(false);
@@ -43,6 +44,7 @@ const App = () => {
   const handleLoginSuccess = (login) => {
     setIsAuthenticated(true);
     setCurrentUser(login);
+    setReserverName(login);
   }
 
   const handleLogout = () => {
@@ -66,7 +68,7 @@ const App = () => {
         await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
       }
     }
-    setReserverName('');
+    setReserverName(currentUser);
     fetchGifts();
   };
 
@@ -87,7 +89,7 @@ const App = () => {
   const openHelpModal = () => {
     setIsHelpModalOpen(true);
     setUnreserveGiftId('');
-    setUnreserveNameInput('');
+    setUnreserveNameInput(currentUser);
   };
 
   const closeHelpModal = () => {
@@ -148,13 +150,6 @@ const App = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-4 mb-6 justify-center">
-          <input
-              type="text"
-              placeholder="Ваше имя"
-              value={reserverName}
-              onChange={(e) => setReserverName(e.target.value)}
-              className="bg-gray-800 border border-gray-700 text-gray-100 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 transition w-64"
-          />
           <button
               onClick={handleReserve}
               className={`bg-cyan-600 text-white p-3 rounded-lg shadow-md hover:bg-cyan-700 transition ${!canReserve ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -284,6 +279,7 @@ const App = () => {
                     placeholder="Ваше имя"
                     value={unreserveName}
                     onChange={(e) => setUnreserveNameInput(e.target.value)}
+                    readOnly={!!currentUser}
                     className="bg-gray-700 border border-gray-600 text-gray-100 p-3 rounded-lg mb-4 w-full focus:outline-none focus:ring-2 focus:ring-red-500 transition"
                 />
                 <div className="flex gap-4">
