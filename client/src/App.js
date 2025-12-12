@@ -62,20 +62,36 @@ const App = () => {
       alert('Воздух застолбить решили?.');
       return;
     }
-    try {
-      for (const id of selectedGifts) {
-        const gift = gifts.find((g) => g._id === id);
-        if (!gift.reserved) {
-          await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
-        }
+
+    let successCount = 0;
+    let errorMessages = [];
+
+    for (const id of selectedGifts) {
+      const gift = gifts.find((g) => g._id === id);
+      if (gift.reserved) {
+        errorMessages.push(`"${gift.name}" уже забронирован`);
+        continue;
       }
-      alert('Сделано!');
-      setReserverName(currentUser);
-      fetchGifts();
-    } catch (err) {
-      const message = err.response?.data?.message || 'Что-то пошло не так...';
-      alert(message);
+
+      try {
+        await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
+        successCount++;
+      } catch (err) {
+        const msg = `Ошибка при брони "${gift.name}": ` + err.response?.data?.message;
+        errorMessages.push(msg);
+      }
     }
+
+    if (successCount > 0) {
+      alert(`Успешно забронировано: ${successCount} подарков! 🎉`);
+    }
+
+    if (errorMessages.length > 0) {
+      alert('Проблемы:\n• ' + errorMessages.join('\n• '));
+    }
+
+    setSelectedGifts([]);
+    fetchGifts();
   };
 
   const handleCheckboxChange = (id) => {
