@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import LoginPage from './components/LoginPage';
 import './App.css';
 
 const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState('');
+
   const [gifts, setGifts] = useState([]);
   const [reserverName, setReserverName] = useState('');
   const [selectedGifts, setSelectedGifts] = useState([]);
@@ -12,7 +17,21 @@ const App = () => {
   const [unreserveName, setUnreserveNameInput] = useState('');
 
   useEffect(() => {
-    fetchGifts();
+    if (isAuthenticated) {
+      fetchGifts();
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    const auth = localStorage.getItem('isAuthenticated') === 'true';
+    const savedLogin = localStorage.getItem('userLogin');
+
+    if (auth && savedLogin) {
+      setIsAuthenticated(auth);
+      setCurrentUser(savedLogin);
+    }
+
+    setLoading(false);
   }, []);
 
   const fetchGifts = async () => {
@@ -20,6 +39,17 @@ const App = () => {
     setGifts(response.data);
     setSelectedGifts([]); // Clear selection on refresh
   };
+
+  const handleLoginSuccess = (login) => {
+    setIsAuthenticated(true);
+    setCurrentUser(login);
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+  }
 
   const handleReserve = async () => {
     if (!reserverName) {
@@ -92,9 +122,31 @@ const App = () => {
     });
   }, [selectedGifts, gifts]);
 
+  if (loading) {
+    return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Загрузка...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
   return (
       <div className="min-h-screen bg-gray-900 text-gray-100 p-6 font-sans">
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-white-400">Wish List</h1>
+        <div className="flex justify-between items-baseline mb-6">
+          <div className="mb-6 text-center">
+            <p className="text-xl text-cyan-400">
+              Hello, <span className="font-bold">{currentUser}</span>
+            </p>
+          </div>
+
+          <button
+              onClick={handleLogout}
+              className="hover:bg-cyan-700 border-2 border-cyan-600 px-5 py-3 rounded-lg font-semibold transition"
+          >
+            Выйти
+          </button>
+        </div>
+
         <div className="flex flex-wrap items-center gap-4 mb-6 justify-center">
           <input
               type="text"

@@ -16,6 +16,9 @@ console.log('Loading gift routes...'); // Для отладки
 const giftRoutes = require('./routes/gifts');
 app.use('/api/gifts', giftRoutes);
 
+const authRoutes = require('./routes/auth');
+app.use('/api', authRoutes);
+
 // Базовый маршрут API
 app.get('/api', (req, res) => {
     res.send('WishList API is running');
