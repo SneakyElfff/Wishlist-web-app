@@ -62,15 +62,20 @@ const App = () => {
       alert('Воздух застолбить решили?.');
       return;
     }
-    for (const id of selectedGifts) {
-      const gift = gifts.find((g) => g._id === id);
-      if (!gift.reserved) {
-        await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
+    try {
+      for (const id of selectedGifts) {
+        const gift = gifts.find((g) => g._id === id);
+        if (!gift.reserved) {
+          await axios.post(`/api/gifts/${id}/reserve`, { reservedBy: reserverName });
+        }
       }
+      alert('Сделано!');
+      setReserverName(currentUser);
+      fetchGifts();
+    } catch (err) {
+      const message = err.response?.data?.message || 'Что-то пошло не так...';
+      alert(message);
     }
-    setReserverName(currentUser);
-    fetchGifts();
-    alert('Сделано!');
   };
 
   const handleCheckboxChange = (id) => {
@@ -112,7 +117,8 @@ const App = () => {
       fetchGifts();
       closeHelpModal();
     } catch (err) {
-      alert(err.response?.data?.message || 'Что-то пошло не так...');
+      const message = err.response?.data?.message || 'Не удалось снять бронь.';
+      alert(message);
     }
   };
 
