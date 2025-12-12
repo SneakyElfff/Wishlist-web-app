@@ -70,6 +70,7 @@ const App = () => {
     }
     setReserverName(currentUser);
     fetchGifts();
+    alert('Сделано!');
   };
 
   const handleCheckboxChange = (id) => {
@@ -194,7 +195,7 @@ const App = () => {
                   </td>
                   <td className="border border-gray-600 p-3">{gift.name}</td>
                   <td className="border border-gray-600 p-3">{gift.description}</td>
-                  <td className="border border-gray-600 p-3">
+                  <td className="border border-gray-600 p-3 text-center">
                     {gift.link ? (
                         <a
                             href={gift.link}
@@ -208,9 +209,17 @@ const App = () => {
                         '-'
                     )}
                   </td>
-                  <td className="border border-gray-600 p-3">
+                  <td className="border border-gray-600 p-3 text-center">
                     {gift.reserved ? (
-                        <span className="text-red-400">{gift.reservedBy}</span>
+                        gift.reservedBy === currentUser ? (
+                            <span className="text-cyan-400">
+                              Мое
+                            </span>
+                        ) : (
+                          <span className="text-red-400">
+                              Забронировано
+                          </span>
+                        )
                     ) : (
                         <span className="text-green-400">Доступно</span>
                     )}
@@ -223,31 +232,52 @@ const App = () => {
 
         {isInfoModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 overflow-y-auto">
-              <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full my-4 mx-4 sm:mx-6 md:mx-8 text-gray-100 max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-4 text-white-400">Пояснение</h2>
+              <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full my-4 mx-4 sm:mx-6 md:mx-8 text-gray-100 text-justify max-h-[90vh] overflow-y-auto">
                 <p className="mb-4">
                   Добро пожаловать! Это своего рода помощник вам, мои любимые люди, в поисках скромного дара, который вы бы
                   могли захотеть преподнести вашей покорной слуге. Но помните, что я в любом случае буду рада абсолютно любому
                   подарку (который не преступает рамки приличия, закона, морали, не нарушает чужих прав и за который вам не
                   пришлось расплатиться жизнью) и даже его отсутствию, ведь главный мой подарок – знакомство с вами.
                 </p>
-                <p className="mb-4">
-                  P.S. Если какой-то вариант вам приглянулся, вы можете его "застолбить", поставив галочку в квадратике в
-                  столбце "Выбрать", введя свое имя и нажав кнопку "Застолбить". И пусть победит сильнейший.
+
+                <p className="mb-4 font-bold text-center">
+                  FAQ
+                </p>
+
+                <p className="underline">
+                  Что делать?
                 </p>
                 <p className="mb-4">
-                  P.P.S. Очередность выстроена в порядке возникновения мозговых импульсов, а не согласно какой-либо из
+                  Если какой-то вариант вам приглянулся, вы можете его "застолбить", поставив галочку в квадратике в
+                  столбце "Выбрать" и нажав кнопку "Застолбить". И пусть победит сильнейший.
+                </p>
+                <p className="underline">
+                  Как отменить?
+                </p>
+                <p className="mb-4">
+                  Если у вас на языке вертится старое-доброе "куда я жмал?", не беда! Нажмите кнопку "Помогите" - и вам помогут.
+                  Достаточно только выбрать из списка отвергаемый лот и нажать кнопку "Снять бронь".
+                </p>
+
+                <p className="mb-4 font-bold text-center">
+                  Примечания
+                </p>
+                <p className="mb-4">
+                  P.S. Очередность выстроена в порядке возникновения мозговых импульсов, а не согласно какой-либо из
                   стандартных сортировок.
                 </p>
                 <p className="mb-4">
-                  P.P.P.S. Некоторые варианты могут быть чуть более затратными, так что feel free to join forces.
+                  P.P.S. Некоторые варианты могут быть чуть более затратными, так что feel free to join forces.
                 </p>
-                <button
-                    onClick={closeInfoModal}
-                    className="bg-purple-600 text-white p-3 rounded-lg shadow-md hover:bg-purple-700 transition"
-                >
-                  Понятно
-                </button>
+
+                <div className="flex justify-center">
+                  <button
+                      onClick={closeInfoModal}
+                      className="bg-purple-600 text-white p-3 rounded-lg shadow-md hover:bg-purple-700 transition"
+                  >
+                    Понятно
+                  </button>
+                </div>
               </div>
             </div>
         )}
@@ -257,8 +287,7 @@ const App = () => {
               <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-2xl w-full text-gray-100">
                 <h2 className="text-2xl font-bold mb-4 text-red-400">Передумали?</h2>
                 <p className="mb-4">
-                  Выберите застолбленную идею и введите имя для подтверждения чистоты ваших намерений. Имя должно совпадать с
-                  введенным ранее.
+                  Не сомневаюсь в чистоте ваших намерений, но снять бронь можно не с любого варианта, а с выбранного ранее лично вами.
                 </p>
                 <select
                     value={unreserveGiftId}
@@ -267,7 +296,7 @@ const App = () => {
                 >
                   <option value="">Выберите забронированный подарок</option>
                   {gifts
-                      .filter((gift) => gift.reserved)
+                      .filter((gift) => gift.reserved && gift.reservedBy === currentUser)
                       .map((gift) => (
                           <option key={gift._id} value={gift._id}>
                             {gift.name}
@@ -280,6 +309,7 @@ const App = () => {
                     value={unreserveName}
                     onChange={(e) => setUnreserveNameInput(e.target.value)}
                     readOnly={!!currentUser}
+                    disabled={!!currentUser}
                     className="bg-gray-700 border border-gray-600 text-gray-100 p-3 rounded-lg mb-4 w-full focus:outline-none focus:ring-2 focus:ring-red-500 transition"
                 />
                 <div className="flex gap-4">
