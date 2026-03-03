@@ -18,8 +18,9 @@ const LoginPage = ({ onLoginSuccess }) => {
             localStorage.setItem("isAuthenticated", 'true');
             localStorage.setItem("user", JSON.stringify(res.data.user));
             localStorage.setItem("userLogin", login);
+            localStorage.setItem("userRole", res.data.user.role);
 
-            onLoginSuccess(login);
+            onLoginSuccess(login, res.data.user.role);
         } catch (err) {
             setError(err.response?.data?.message || 'Ошибка входа');
         } finally {

@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const Gift = require('../models/Gift');
 
+// Add a gift
+router.post('/', async (req, res) => {
+    try {
+        const gift = new Gift(req.body);
+        await gift.save();
+
+        res.json(gift);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+})
+
 // Get all gifts
 router.get('/', async (req, res) => {
     try {

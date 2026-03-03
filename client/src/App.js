@@ -2,17 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import LoginPage from './components/LoginPage';
 import './App.css';
+import AddGiftModal from "./components/AddGiftModal";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState('');
+  const [userRole, setUserRole] = useState('user');
 
   const [gifts, setGifts] = useState([]);
   const [reserverName, setReserverName] = useState('');
   const [selectedGifts, setSelectedGifts] = useState([]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isAddGiftModalOpen, setIsAddGiftModalOpen] = useState(false);
   const [unreserveGiftId, setUnreserveGiftId] = useState('');
   const [unreserveName, setUnreserveNameInput] = useState('');
 
@@ -25,10 +28,12 @@ const App = () => {
   useEffect(() => {
     const auth = localStorage.getItem('isAuthenticated') === 'true';
     const savedLogin = localStorage.getItem('userLogin');
+    const savedRole = localStorage.getItem('userRole') || 'user';
 
     if (auth && savedLogin) {
       setIsAuthenticated(auth);
       setCurrentUser(savedLogin);
+      setUserRole(savedRole);
       setReserverName(savedLogin)
     }
 
@@ -41,9 +46,10 @@ const App = () => {
     setSelectedGifts([]); // Clear selection on refresh
   };
 
-  const handleLoginSuccess = (login) => {
+  const handleLoginSuccess = (login, role) => {
     setIsAuthenticated(true);
     setCurrentUser(login);
+    setUserRole(role);
     setReserverName(login);
   }
 
@@ -163,6 +169,15 @@ const App = () => {
               Hello, <span className="font-bold">{currentUser}</span>
             </p>
           </div>
+
+          {userRole === 'admin' && (
+              <button
+                  onClick={() => setIsAddGiftModalOpen(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700 px-5 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+              >
+                <span>+</span> Добавить подарок
+              </button>
+          )}
 
           <button
               onClick={handleLogout}
@@ -351,6 +366,14 @@ const App = () => {
               </div>
             </div>
         )}
+
+        <AddGiftModal
+            isOpen={isAddGiftModalOpen}
+            onClose={() => setIsAddGiftModalOpen(false)}
+            onGiftAdded={() => {
+              fetchGifts();
+            }}
+        />
       </div>
   );
 };
