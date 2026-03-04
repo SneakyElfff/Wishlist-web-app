@@ -14,6 +14,28 @@ router.post('/', async (req, res) => {
     }
 })
 
+// Edit a gift
+// TODO: use patch instead of put
+router.put('/:id', async (req, res) => {
+    try {
+        const gift = await Gift.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {new: true, runValidators: true}  // return updated doc
+            );
+
+        if (!gift)
+            return res.status(404).json({ message: 'Подарок не найден.' });
+
+        res.json({
+            message: 'Подарок успешно обновлен',
+            gift
+        });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+})
+
 // Delete a gift
 router.delete('/:id', async (req, res) => {
     try {

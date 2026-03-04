@@ -4,7 +4,9 @@ import LoginPage from './components/LoginPage';
 import './App.css';
 import AddGiftModal from "./components/AddGiftModal";
 import DeleteConfirmModal from "./components/DeleteConfirmModal";
+import EditGiftModal from "./components/EditGiftModal";
 
+// TODO: use react-toastify instead of alerts
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -15,6 +17,7 @@ const App = () => {
   const [reserverName, setReserverName] = useState('');
   const [selectedGifts, setSelectedGifts] = useState([]);
   const [giftToDelete, setGiftToDelete] = useState(null);
+  const [giftToEdit, setGiftToEdit] = useState(null);
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -23,6 +26,7 @@ const App = () => {
   const [unreserveName, setUnreserveNameInput] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -138,6 +142,16 @@ const App = () => {
     setIsDeleteModalOpen(false);
     setGiftToDelete(null);
   }
+
+  const openEditModal = (gift) => {
+    setGiftToEdit(gift);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setGiftToEdit(null);
+  };
 
   const handleUnreserve = async () => {
     if (!unreserveGiftId) {
@@ -297,8 +311,18 @@ const App = () => {
                         <span className="text-green-400">Доступно</span>
                     )}
                   </td>
+
                   {userRole === 'admin' && (
                       <td className="border border-gray-600 p-3 text-center">
+                        <div className="flex justify-center gap-3">
+                        <button
+                            onClick={() => openEditModal(gift)}
+                            className="text-yellow-400 hover:text-yellow-300 transition text-xl"
+                            title="Редактировать подарок"
+                        >
+                          ✏️
+                        </button>
+
                         <button
                             onClick={() => openDeleteModal(gift)}
                             className="text-red-400 hover:text-red-300 transition text-xl"
@@ -306,6 +330,7 @@ const App = () => {
                         >
                           🗑️
                         </button>
+                        </div>
                       </td>
                   )}
                 </tr>
@@ -414,10 +439,20 @@ const App = () => {
             </div>
         )}
 
+        {/*TODO: same form component for add & edit*/}
         <AddGiftModal
             isOpen={isAddGiftModalOpen}
             onClose={() => setIsAddGiftModalOpen(false)}
             onGiftAdded={() => {
+              fetchGifts();
+            }}
+        />
+
+        <EditGiftModal
+            isOpen={isEditModalOpen}
+            onClose={closeEditModal}
+            gift={giftToEdit}
+            onGiftUpdated={() => {
               fetchGifts();
             }}
         />
