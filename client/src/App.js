@@ -3,6 +3,7 @@ import axios from 'axios';
 import LoginPage from './components/LoginPage';
 import './App.css';
 import AddGiftModal from "./components/AddGiftModal";
+import DeleteConfirmModal from "./components/DeleteConfirmModal";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -13,11 +14,15 @@ const App = () => {
   const [gifts, setGifts] = useState([]);
   const [reserverName, setReserverName] = useState('');
   const [selectedGifts, setSelectedGifts] = useState([]);
+  const [giftToDelete, setGiftToDelete] = useState(null);
+
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isAddGiftModalOpen, setIsAddGiftModalOpen] = useState(false);
   const [unreserveGiftId, setUnreserveGiftId] = useState('');
   const [unreserveName, setUnreserveNameInput] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -124,6 +129,16 @@ const App = () => {
     setIsHelpModalOpen(false);
   };
 
+  const openDeleteModal = (gift) => {
+    setGiftToDelete({ id: gift._id, name: gift.name });
+    setIsDeleteModalOpen(true);
+  }
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setGiftToDelete(null);
+  }
+
   const handleUnreserve = async () => {
     if (!unreserveGiftId) {
       alert('Галя, у нас отмена! А что отменяем-то?');
@@ -152,6 +167,24 @@ const App = () => {
       return gift && !gift.reserved;
     });
   }, [selectedGifts, gifts]);
+
+  const handleDeleteConfirm = async () => {
+    if (!giftToDelete) return;
+
+    setDeleteLoading(true);
+
+    try {
+      await axios.delete(`/api/gifts/${giftToDelete.id}`);
+      alert('Подарок успешно удален')
+      fetchGifts();
+      closeDeleteModal();
+    } catch (err) {
+      const message = err.response?.data?.message || 'Не удалось удалить подарок';
+      alert(message);
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
 
   if (loading) {
     return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Загрузка...</div>;
@@ -217,6 +250,9 @@ const App = () => {
               <th className="border border-gray-600 p-3">Описание</th>
               <th className="border border-gray-600 p-3">Ссылка</th>
               <th className="border border-gray-600 p-3">Статус</th>
+              {userRole === 'admin' && (
+                  <th className="border border-gray-600 p-3 w-12">Действия</th>
+              )}
             </tr>
             </thead>
             <tbody>
@@ -261,6 +297,17 @@ const App = () => {
                         <span className="text-green-400">Доступно</span>
                     )}
                   </td>
+                  {userRole === 'admin' && (
+                      <td className="border border-gray-600 p-3 text-center">
+                        <button
+                            onClick={() => openDeleteModal(gift)}
+                            className="text-red-400 hover:text-red-300 transition text-xl"
+                            title="Удалить подарок"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                  )}
                 </tr>
             ))}
             </tbody>
@@ -373,6 +420,14 @@ const App = () => {
             onGiftAdded={() => {
               fetchGifts();
             }}
+        />
+
+        <DeleteConfirmModal
+            isOpen={isDeleteModalOpen}
+            onClose={closeDeleteModal}
+            onConfirm={handleDeleteConfirm}
+            giftName={giftToDelete?.name}
+            loading={deleteLoading}
         />
       </div>
   );

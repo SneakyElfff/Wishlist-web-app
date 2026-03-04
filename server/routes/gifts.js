@@ -14,6 +14,21 @@ router.post('/', async (req, res) => {
     }
 })
 
+// Delete a gift
+router.delete('/:id', async (req, res) => {
+    try {
+        const gift = await Gift.findByIdAndDelete(req.params.id);
+
+        if (!gift) {
+            return res.status(404).json({ message: 'Подарок не найден' });
+        }
+
+        res.json({ message: 'Подарок успешно удален'});
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+})
+
 // Get all gifts
 router.get('/', async (req, res) => {
     try {
