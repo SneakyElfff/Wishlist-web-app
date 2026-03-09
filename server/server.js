@@ -19,6 +19,9 @@ app.use('/api/gifts', giftRoutes);
 const authRoutes = require('./routes/auth');
 app.use('/api', authRoutes);
 
+const userRoutes = require('./routes/users');
+app.use('/api/users', userRoutes);
+
 // Базовый маршрут API
 app.get('/api', (req, res) => {
     res.send('WishList API is running');

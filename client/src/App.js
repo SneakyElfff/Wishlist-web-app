@@ -5,6 +5,7 @@ import './App.css';
 import AddGiftModal from "./components/AddGiftModal";
 import DeleteConfirmModal from "./components/DeleteConfirmModal";
 import EditGiftModal from "./components/EditGiftModal";
+import UserManagementModal from './components/UserManagementModal';
 
 // TODO: use react-toastify instead of alerts
 const App = () => {
@@ -27,6 +28,8 @@ const App = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -218,20 +221,29 @@ const App = () => {
           </div>
 
           {userRole === 'admin' && (
-              <button
-                  onClick={() => setIsAddGiftModalOpen(true)}
-                  className="bg-emerald-600 hover:bg-emerald-700 px-5 py-3 rounded-lg font-semibold transition flex items-center gap-2"
-              >
-                <span>+</span> Добавить подарок
-              </button>
-          )}
+              <div className="flex items-center gap-4">
+                <button
+                    onClick={() => setIsUsersModalOpen(true)}
+                    className="bg-purple-600 hover:bg-purple-700 px-5 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+                >
+                  <span>👥</span> Пользователи
+                </button>
 
-          <button
-              onClick={handleLogout}
-              className="hover:bg-cyan-700 border-2 border-cyan-600 px-5 py-3 rounded-lg font-semibold transition"
-          >
-            Выйти
-          </button>
+                <button
+                    onClick={() => setIsAddGiftModalOpen(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 px-5 py-3 rounded-lg font-semibold transition flex items-center gap-2"
+                >
+                  <span>+</span> Добавить подарок
+                </button>
+
+                <button
+                    onClick={handleLogout}
+                    className="hover:bg-cyan-700 border-2 border-cyan-600 px-5 py-3 rounded-lg font-semibold transition"
+                >
+                  Выйти
+                </button>
+              </div>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-4 mb-6 justify-center">
@@ -463,6 +475,11 @@ const App = () => {
             onConfirm={handleDeleteConfirm}
             giftName={giftToDelete?.name}
             loading={deleteLoading}
+        />
+
+        <UserManagementModal
+            isOpen={isUsersModalOpen}
+            onClose={() => setIsUsersModalOpen(false)}
         />
       </div>
   );
