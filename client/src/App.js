@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import LoginPage from './components/LoginPage';
 import './App.css';
+import {TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import AdminMenu from './components/AdminMenu';
 import AddGiftModal from "./components/AddGiftModal";
 import DeleteConfirmModal from "./components/DeleteConfirmModal";
 import EditGiftModal from "./components/EditGiftModal";
@@ -220,29 +222,21 @@ const App = () => {
             </p>
           </div>
 
-          {userRole === 'admin' && (
-              <div className="flex items-center gap-4">
-                <button
-                    onClick={() => setIsUsersModalOpen(true)}
-                    className="bg-purple-600 hover:bg-purple-700 px-5 py-3 rounded-lg font-semibold transition flex items-center gap-2"
-                >
-                  <span>👥</span> Пользователи
-                </button>
-
-                <button
-                    onClick={() => setIsAddGiftModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 px-5 py-3 rounded-lg font-semibold transition flex items-center gap-2"
-                >
-                  <span>+</span> Добавить подарок
-                </button>
-
-                <button
-                    onClick={handleLogout}
-                    className="hover:bg-cyan-700 border-2 border-cyan-600 px-5 py-3 rounded-lg font-semibold transition"
-                >
-                  Выйти
-                </button>
-              </div>
+          {userRole === 'admin' ? (
+              <AdminMenu
+                  isAdminMenuOpen={isAdminMenuOpen}
+                  setIsAdminMenuOpen={setIsAdminMenuOpen}
+                  setIsAddGiftModalOpen={setIsAddGiftModalOpen}
+                  setIsUsersModalOpen={setIsUsersModalOpen}
+                  handleLogout={handleLogout}
+              />
+          ) : (
+              <button
+                  onClick={handleLogout}
+                  className="hover:bg-cyan-700 border-2 border-cyan-600 px-5 py-3 rounded-lg font-semibold transition"
+              >
+                Выйти
+              </button>
           )}
         </div>
 
@@ -332,7 +326,7 @@ const App = () => {
                             className="text-yellow-400 hover:text-yellow-300 transition text-xl"
                             title="Редактировать подарок"
                         >
-                          ✏️
+                          <PencilIcon className="w-5 h-5" />
                         </button>
 
                         <button
@@ -340,7 +334,7 @@ const App = () => {
                             className="text-red-400 hover:text-red-300 transition text-xl"
                             title="Удалить подарок"
                         >
-                          🗑️
+                          <TrashIcon className="w-5 h-5" />
                         </button>
                         </div>
                       </td>
