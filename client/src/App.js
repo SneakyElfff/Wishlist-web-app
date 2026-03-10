@@ -3,7 +3,8 @@ import axios from 'axios';
 import LoginPage from './components/LoginPage';
 import './App.css';
 import {TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
-import AdminMenu from './components/AdminMenu';
+import {HeartIcon} from "@heroicons/react/16/solid";
+import UserMenu from './components/UserMenu';
 import AddGiftModal from "./components/AddGiftModal";
 import DeleteConfirmModal from "./components/DeleteConfirmModal";
 import EditGiftModal from "./components/EditGiftModal";
@@ -30,7 +31,7 @@ const App = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
 
   useEffect(() => {
@@ -222,22 +223,15 @@ const App = () => {
             </p>
           </div>
 
-          {userRole === 'admin' ? (
-              <AdminMenu
-                  isAdminMenuOpen={isAdminMenuOpen}
-                  setIsAdminMenuOpen={setIsAdminMenuOpen}
-                  setIsAddGiftModalOpen={setIsAddGiftModalOpen}
-                  setIsUsersModalOpen={setIsUsersModalOpen}
-                  handleLogout={handleLogout}
-              />
-          ) : (
-              <button
-                  onClick={handleLogout}
-                  className="hover:bg-cyan-700 border-2 border-cyan-600 px-5 py-3 rounded-lg font-semibold transition"
-              >
-                Выйти
-              </button>
-          )}
+          <UserMenu
+              isMenuOpen={isMenuOpen}
+              setIsMenuOpen={setIsMenuOpen}
+              userRole={userRole}
+              setIsAddGiftModalOpen={setIsAddGiftModalOpen}
+              setIsUsersModalOpen={setIsUsersModalOpen}
+              openInfoModal={openInfoModal}
+              handleLogout={handleLogout}
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-4 mb-6 justify-center">
@@ -249,18 +243,13 @@ const App = () => {
             Застолбить
           </button>
           <button
-              onClick={openInfoModal}
-              className="bg-purple-600 text-white p-3 rounded-lg shadow-md hover:bg-purple-700 transition"
-          >
-            Инструкция
-          </button>
-          <button
               onClick={openHelpModal}
               className="bg-red-600 text-white p-3 rounded-lg shadow-md hover:bg-red-700 transition"
           >
             Помогите
           </button>
         </div>
+
         <div className="overflow-x-auto">
           <table className="table-auto w-full border-collapse bg-gray-800 rounded-lg shadow-lg">
             <thead>
@@ -343,6 +332,29 @@ const App = () => {
             ))}
             </tbody>
           </table>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-300">
+              Made with <HeartIcon className="inline w-4 h-4" /> by SneakyElfff.
+              Get{' '}
+              <span
+                  onClick={openInfoModal}
+                  className="text-cyan-400 hover:underline transition-colors cursor-pointer"
+              >
+                Help
+              </span>
+              . Contribute on{' '}
+              <a
+                  href="https://github.com/SneakyElfff/Wishlist-web-app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-cyan-400 hover:underline transition-colors cursor-pointer"
+              >
+                GitHub
+              </a>
+              . Version: 3.0.2
+            </p>
+          </div>
         </div>
 
         {isInfoModalOpen && (
