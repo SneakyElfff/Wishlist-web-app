@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 router.post('/login', async (req, res) => {
     const { login, password } = req.body;
@@ -15,8 +16,9 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Вы кто такие? Я вас не звал'});
         }
 
-        // TODO: later use bcrypt.compare(password, user.password)
-        if (user.password !== password) {
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
             return res.status(401).json({ message: 'Вы точно не мошенники?'});
         }
 

@@ -310,21 +310,21 @@ const App = () => {
                   {userRole === 'admin' && (
                       <td className="border border-gray-600 p-3 text-center">
                         <div className="flex justify-center gap-3">
-                        <button
-                            onClick={() => openEditModal(gift)}
-                            className="text-yellow-400 hover:text-yellow-300 transition text-xl"
-                            title="Редактировать подарок"
-                        >
-                          <PencilIcon className="w-5 h-5" />
-                        </button>
+                          <button
+                              onClick={() => openEditModal(gift)}
+                              className="text-yellow-400 hover:text-yellow-300 transition text-xl"
+                              title="Редактировать подарок"
+                          >
+                            <PencilIcon className="w-5 h-5" />
+                          </button>
 
-                        <button
-                            onClick={() => openDeleteModal(gift)}
-                            className="text-red-400 hover:text-red-300 transition text-xl"
-                            title="Удалить подарок"
-                        >
-                          <TrashIcon className="w-5 h-5" />
-                        </button>
+                          <button
+                              onClick={() => openDeleteModal(gift)}
+                              className="text-red-400 hover:text-red-300 transition text-xl"
+                              title="Удалить подарок"
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
                         </div>
                       </td>
                   )}
