@@ -153,6 +153,7 @@ const UserManagementModal = ({ isOpen, onClose }) => {
                     isOpen={isDeleteModalOpen}
                     onClose={() => setIsDeleteModalOpen(false)}
                     onConfirm={handleDeleteConfirm}
+                    object='пользователя'
                     giftName={
                         selectedUser?.role === 'admin'
                             ? `администратора ${selectedUser?.login}`

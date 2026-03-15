@@ -5,9 +5,8 @@ import './App.css';
 import {TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 import {HeartIcon} from "@heroicons/react/16/solid";
 import UserMenu from './components/UserMenu';
-import AddGiftModal from "./components/AddGiftModal";
+import GiftFormModal from "./components/GiftFormModal";
 import DeleteConfirmModal from "./components/DeleteConfirmModal";
-import EditGiftModal from "./components/EditGiftModal";
 import UserManagementModal from './components/UserManagementModal';
 
 // TODO: use react-toastify instead of alerts
@@ -19,18 +18,17 @@ const App = () => {
 
   const [gifts, setGifts] = useState([]);
   const [reserverName, setReserverName] = useState('');
+  const [unreserveGiftId, setUnreserveGiftId] = useState('');
+  const [unreserveName, setUnreserveNameInput] = useState('');
   const [selectedGifts, setSelectedGifts] = useState([]);
   const [giftToDelete, setGiftToDelete] = useState(null);
   const [giftToEdit, setGiftToEdit] = useState(null);
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [isAddGiftModalOpen, setIsAddGiftModalOpen] = useState(false);
-  const [unreserveGiftId, setUnreserveGiftId] = useState('');
-  const [unreserveName, setUnreserveNameInput] = useState('');
+  const [isGiftFormModalOpen, setIsGiftFormModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
 
@@ -55,12 +53,6 @@ const App = () => {
     setLoading(false);
   }, []);
 
-  const fetchGifts = async () => {
-    const response = await axios.get('/api/gifts');
-    setGifts(response.data);
-    setSelectedGifts([]); // Clear selection on refresh
-  };
-
   const handleLoginSuccess = (login, role) => {
     setIsAuthenticated(true);
     setCurrentUser(login);
@@ -73,6 +65,12 @@ const App = () => {
     localStorage.removeItem('user');
     setIsAuthenticated(false);
   }
+
+  const fetchGifts = async () => {
+    const response = await axios.get('/api/gifts');
+    setGifts(response.data);
+    setSelectedGifts([]); // Clear selection on refresh
+  };
 
   const handleReserve = async () => {
     if (!reserverName) {
@@ -113,50 +111,6 @@ const App = () => {
 
     setSelectedGifts([]);
     fetchGifts();
-  };
-
-  const handleCheckboxChange = (id) => {
-    setSelectedGifts((prev) =>
-        prev.includes(id) ? prev.filter((giftId) => giftId !== id) : [...prev, id]
-    );
-  };
-
-  const openInfoModal = () => {
-    setIsInfoModalOpen(true);
-  };
-
-  const closeInfoModal = () => {
-    setIsInfoModalOpen(false);
-  };
-
-  const openHelpModal = () => {
-    setIsHelpModalOpen(true);
-    setUnreserveGiftId('');
-    setUnreserveNameInput(currentUser);
-  };
-
-  const closeHelpModal = () => {
-    setIsHelpModalOpen(false);
-  };
-
-  const openDeleteModal = (gift) => {
-    setGiftToDelete({ id: gift._id, name: gift.name });
-    setIsDeleteModalOpen(true);
-  }
-
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setGiftToDelete(null);
-  }
-
-  const openEditModal = (gift) => {
-    setGiftToEdit(gift);
-    setIsEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-    setGiftToEdit(null);
   };
 
   const handleUnreserve = async () => {
@@ -206,6 +160,55 @@ const App = () => {
     }
   }
 
+  const handleCheckboxChange = (id) => {
+    setSelectedGifts((prev) =>
+        prev.includes(id) ? prev.filter((giftId) => giftId !== id) : [...prev, id]
+    );
+  };
+
+  const openInfoModal = () => {
+    setIsInfoModalOpen(true);
+  };
+
+  const closeInfoModal = () => {
+    setIsInfoModalOpen(false);
+  };
+
+  const openHelpModal = () => {
+    setIsHelpModalOpen(true);
+    setUnreserveGiftId('');
+    setUnreserveNameInput(currentUser);
+  };
+
+  const closeHelpModal = () => {
+    setIsHelpModalOpen(false);
+  };
+
+  const openDeleteModal = (gift) => {
+    setGiftToDelete({ id: gift._id, name: gift.name });
+    setIsDeleteModalOpen(true);
+  }
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setGiftToDelete(null);
+  }
+
+  const openAddModal = () => {
+    setGiftToEdit(null);
+    setIsGiftFormModalOpen(true);
+  };
+
+  const openEditModal = (gift) => {
+    setGiftToEdit(gift);
+    setIsGiftFormModalOpen(true);
+  };
+
+  const closeGiftFormModal = () => {
+    setIsGiftFormModalOpen(false);
+    setGiftToEdit(null);
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">Загрузка...</div>;
   }
@@ -214,6 +217,7 @@ const App = () => {
     return <LoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
+  // TODO: move modals into separate jsx components
   return (
       <div className="min-h-screen bg-gray-900 text-gray-100 p-6 font-sans">
         <div className="flex justify-between items-baseline mb-6">
@@ -227,7 +231,7 @@ const App = () => {
               isMenuOpen={isMenuOpen}
               setIsMenuOpen={setIsMenuOpen}
               userRole={userRole}
-              setIsAddGiftModalOpen={setIsAddGiftModalOpen}
+              openAddGift={openAddModal}
               setIsUsersModalOpen={setIsUsersModalOpen}
               openInfoModal={openInfoModal}
               handleLogout={handleLogout}
@@ -457,21 +461,14 @@ const App = () => {
             </div>
         )}
 
-        {/*TODO: same form component for add & edit*/}
-        <AddGiftModal
-            isOpen={isAddGiftModalOpen}
-            onClose={() => setIsAddGiftModalOpen(false)}
-            onGiftAdded={() => {
-              fetchGifts();
-            }}
-        />
-
-        <EditGiftModal
-            isOpen={isEditModalOpen}
-            onClose={closeEditModal}
+        <GiftFormModal
+            isOpen={isGiftFormModalOpen}
+            onClose={closeGiftFormModal}
+            mode={giftToEdit ? "edit" : "add"}
             gift={giftToEdit}
-            onGiftUpdated={() => {
+            onSuccess={() => {
               fetchGifts();
+              closeGiftFormModal();
             }}
         />
 

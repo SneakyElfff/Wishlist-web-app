@@ -1,12 +1,12 @@
 import React from 'react';
 
-const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, giftName, loading = false }) => {
+const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, object = 'подарок', giftName, loading = false }) => {
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
             <div className="bg-gray-800 p-8 rounded-xl shadow-2xl max-w-lg w-full">
-                <h2 className="text-2xl font-bold mb-4 text-red-400">Удалить подарок?</h2>
+                <h2 className="text-2xl font-bold mb-4 text-red-400">Удалить {object}?</h2>
 
                 <p className="mb-4">
                     Вы действительно хотите удалить <strong className="text-cyan-400">{giftName || 'этот подарок'}</strong>?<br />

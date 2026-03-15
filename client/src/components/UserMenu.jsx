@@ -1,15 +1,15 @@
-import React, {useEffect} from 'react';
-import {Bars4Icon, PlusIcon, UsersIcon} from '@heroicons/react/24/outline';
+import React, { useEffect } from 'react';
+import { Bars4Icon, PlusIcon, UsersIcon } from '@heroicons/react/24/outline';
 
 const UserMenu = ({
-   isMenuOpen,
-   setIsMenuOpen,
-   userRole,
-   setIsAddGiftModalOpen,
-   setIsUsersModalOpen,
-   openInfoModal,
-   handleLogout,
-}) => {
+                      isMenuOpen,
+                      setIsMenuOpen,
+                      userRole,
+                      openAddGift,
+                      setIsUsersModalOpen,
+                      openInfoModal,
+                      handleLogout,
+                  }) => {
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (isMenuOpen && !e.target.closest('.relative')) {
@@ -47,7 +47,7 @@ const UserMenu = ({
                     {userRole === 'admin' && (
                         <>
                             <button
-                                onClick={() => setIsAddGiftModalOpen(true)}
+                                onClick={openAddGift}
                                 className="w-full hover:bg-gray-600 px-5 py-3 font-semibold transition flex items-center gap-2"
                             >
                                 <PlusIcon className="w-5 h-5" /> Добавить подарок
