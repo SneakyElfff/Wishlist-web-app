@@ -15,6 +15,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState('');
   const [userRole, setUserRole] = useState('user');
+  const [showSpoilers, setShowSpoilers] = useState(true);
 
   const [gifts, setGifts] = useState([]);
   const [reserverName, setReserverName] = useState('');
@@ -47,6 +48,11 @@ const App = () => {
       setIsAuthenticated(auth);
       setCurrentUser(savedLogin);
       setUserRole(savedRole);
+      if (savedRole === 'admin') {
+        setShowSpoilers(false);
+      } else {
+        setShowSpoilers(true);
+      }
       setReserverName(savedLogin)
     }
 
@@ -57,8 +63,17 @@ const App = () => {
     setIsAuthenticated(true);
     setCurrentUser(login);
     setUserRole(role);
+    if (role === 'admin') {
+      setShowSpoilers(false);
+    } else {
+      setShowSpoilers(true);
+    }
     setReserverName(login);
   }
+
+  const handleSpoilers = () => {
+    setShowSpoilers(prev => !prev);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
@@ -231,6 +246,8 @@ const App = () => {
               isMenuOpen={isMenuOpen}
               setIsMenuOpen={setIsMenuOpen}
               userRole={userRole}
+              showSpoilers={showSpoilers}
+              handleSpoilers={handleSpoilers}
               openAddGift={openAddModal}
               setIsUsersModalOpen={setIsUsersModalOpen}
               openInfoModal={openInfoModal}
@@ -254,6 +271,7 @@ const App = () => {
           </button>
         </div>
 
+        {/*TODO: add message about absent gifts*/}
         <div className="overflow-x-auto">
           <table className="table-auto w-full border-collapse bg-gray-800 rounded-lg shadow-lg">
             <thead>
@@ -296,18 +314,22 @@ const App = () => {
                     )}
                   </td>
                   <td className="border border-gray-600 p-3 text-center">
-                    {gift.reserved ? (
-                        gift.reservedBy === currentUser ? (
-                            <span className="text-cyan-400">
+                    {showSpoilers ? (
+                        gift.reserved ? (
+                              gift.reservedBy === currentUser ? (
+                                  <span className="text-cyan-400">
                               Мое
                             </span>
-                        ) : (
-                          <span className="text-red-400">
+                              ) : (
+                                  <span className="text-red-400">
                               Забронировано
                           </span>
-                        )
+                              )
+                          ) : (
+                              <span className="text-green-400">Доступно</span>
+                          )
                     ) : (
-                        <span className="text-green-400">Доступно</span>
+                        <span className="text-cyan-400">?</span>
                     )}
                   </td>
 

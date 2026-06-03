@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
-import { Bars4Icon, PlusIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { Bars4Icon, EyeSlashIcon, EyeIcon, PlusIcon, UsersIcon } from '@heroicons/react/24/outline';
 
 const UserMenu = ({
                       isMenuOpen,
                       setIsMenuOpen,
                       userRole,
+                      showSpoilers,
+                      handleSpoilers,
                       openAddGift,
                       setIsUsersModalOpen,
                       openInfoModal,
@@ -46,6 +48,23 @@ const UserMenu = ({
 
                     {userRole === 'admin' && (
                         <>
+                            {showSpoilers ? (
+                                    <button
+                                        onClick={handleSpoilers}
+                                        className="w-full hover:bg-gray-600 px-5 py-3 font-semibold transition flex items-center gap-2"
+                                    >
+                                        <EyeSlashIcon className="w-5 h-5" /> Скрыть спойлеры
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={handleSpoilers}
+                                        className="w-full hover:bg-gray-600 px-5 py-3 font-semibold transition flex items-center gap-2"
+                                    >
+                                        <EyeIcon className="w-5 h-5" /> Показать спойлеры
+                                    </button>
+                                )
+                            }
+
                             <button
                                 onClick={openAddGift}
                                 className="w-full hover:bg-gray-600 px-5 py-3 font-semibold transition flex items-center gap-2"
