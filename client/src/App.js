@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import LoginPage from './components/LoginPage';
 import './App.css';
-import {TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import {ArchiveBoxIcon, PencilIcon } from '@heroicons/react/24/outline';
 import {HeartIcon} from "@heroicons/react/16/solid";
 import UserMenu from './components/UserMenu';
 import GiftFormModal from "./components/GiftFormModal";
-import DeleteConfirmModal from "./components/DeleteConfirmModal";
+import ArchiveModal from "./components/ArchiveModal";
 import UserManagementModal from './components/UserManagementModal';
 
 // TODO: use react-toastify instead of alerts
@@ -22,16 +22,14 @@ const App = () => {
   const [unreserveGiftId, setUnreserveGiftId] = useState('');
   const [unreserveName, setUnreserveNameInput] = useState('');
   const [selectedGifts, setSelectedGifts] = useState([]);
-  const [giftToDelete, setGiftToDelete] = useState(null);
   const [giftToEdit, setGiftToEdit] = useState(null);
 
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isGiftFormModalOpen, setIsGiftFormModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -157,23 +155,17 @@ const App = () => {
     });
   }, [selectedGifts, gifts]);
 
-  const handleDeleteConfirm = async () => {
-    if (!giftToDelete) return;
-
-    setDeleteLoading(true);
-
+  const handleArchive = async (gift) => {
+    if (!window.confirm('Переместить подарок в архив?')) return;
     try {
-      await axios.delete(`/api/gifts/${giftToDelete.id}`);
-      alert('Подарок успешно удален')
+      await axios.post(`/api/gifts/${gift._id}/archive`);
+      alert('Подарок перемещен в архив');
       fetchGifts();
-      closeDeleteModal();
     } catch (err) {
-      const message = err.response?.data?.message || 'Не удалось удалить подарок';
+      const message = err.response?.data?.message || 'Не удалось переместить в архив.';
       alert(message);
-    } finally {
-      setDeleteLoading(false);
     }
-  }
+  };
 
   const handleCheckboxChange = (id) => {
     setSelectedGifts((prev) =>
@@ -198,16 +190,6 @@ const App = () => {
   const closeHelpModal = () => {
     setIsHelpModalOpen(false);
   };
-
-  const openDeleteModal = (gift) => {
-    setGiftToDelete({ id: gift._id, name: gift.name });
-    setIsDeleteModalOpen(true);
-  }
-
-  const closeDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setGiftToDelete(null);
-  }
 
   const openAddModal = () => {
     setGiftToEdit(null);
@@ -249,6 +231,7 @@ const App = () => {
               showSpoilers={showSpoilers}
               handleSpoilers={handleSpoilers}
               openAddGift={openAddModal}
+              setIsArchiveModalOpen={setIsArchiveModalOpen}
               setIsUsersModalOpen={setIsUsersModalOpen}
               openInfoModal={openInfoModal}
               handleLogout={handleLogout}
@@ -287,7 +270,9 @@ const App = () => {
             </tr>
             </thead>
             <tbody>
-            {gifts.map((gift) => (
+            {gifts
+                .filter((gift) => gift.archived === false)
+                .map((gift) => (
                 <tr key={gift._id} className="hover:bg-gray-600 transition">
                   <td className="border border-gray-600 p-3 text-center">
                     <input
@@ -345,11 +330,11 @@ const App = () => {
                           </button>
 
                           <button
-                              onClick={() => openDeleteModal(gift)}
-                              className="text-red-400 hover:text-red-300 transition text-xl"
-                              title="Удалить подарок"
+                              onClick={() => handleArchive(gift)}
+                              className="text-amber-800 hover:text-amber-700 transition text-xl"
+                              title="Архивировать подарок"
                           >
-                            <TrashIcon className="w-5 h-5" />
+                            <ArchiveBoxIcon className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
@@ -378,7 +363,7 @@ const App = () => {
               >
                 GitHub
               </a>
-              . Version: 3.0.2
+              . Version: 3.2.0
             </p>
           </div>
         </div>
@@ -408,7 +393,7 @@ const App = () => {
                   Как отменить?
                 </p>
                 <p className="mb-4">
-                  Если у вас на языке вертится старое-доброе "куда я жмал?", не беда! Нажмите кнопку "Помогите" - и вам помогут.
+                  Если у вас на языке вертится старое-доброе "куда я жмал?", не беда! Нажмите кнопку "Помогите" – и вам помогут.
                   Достаточно только выбрать из списка отвергаемый лот и нажать кнопку "Снять бронь".
                 </p>
 
@@ -494,12 +479,10 @@ const App = () => {
             }}
         />
 
-        <DeleteConfirmModal
-            isOpen={isDeleteModalOpen}
-            onClose={closeDeleteModal}
-            onConfirm={handleDeleteConfirm}
-            giftName={giftToDelete?.name}
-            loading={deleteLoading}
+        <ArchiveModal
+            isOpen={isArchiveModalOpen}
+            onClose={() => setIsArchiveModalOpen(false)}
+            onUnarchive={fetchGifts}
         />
 
         <UserManagementModal

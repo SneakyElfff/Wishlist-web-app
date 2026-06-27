@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Bars4Icon, EyeSlashIcon, EyeIcon, PlusIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { Bars4Icon, EyeSlashIcon, EyeIcon, PlusIcon, ArchiveBoxIcon, UsersIcon } from '@heroicons/react/24/outline';
 
 const UserMenu = ({
                       isMenuOpen,
@@ -8,6 +8,7 @@ const UserMenu = ({
                       showSpoilers,
                       handleSpoilers,
                       openAddGift,
+                      setIsArchiveModalOpen,
                       setIsUsersModalOpen,
                       openInfoModal,
                       handleLogout,
@@ -65,12 +66,23 @@ const UserMenu = ({
                                 )
                             }
 
+                            <div className="w-full h-px bg-cyan-600" />
+
                             <button
                                 onClick={openAddGift}
                                 className="w-full hover:bg-gray-600 px-5 py-3 font-semibold transition flex items-center gap-2"
                             >
                                 <PlusIcon className="w-5 h-5" /> Добавить подарок
                             </button>
+
+                            <button
+                                onClick={() => setIsArchiveModalOpen(true)}
+                                className="w-full hover:bg-gray-600 px-5 py-3 font-semibold transition flex items-center gap-2"
+                            >
+                                <ArchiveBoxIcon className="w-5 h-5" /> Архив подарков
+                            </button>
+
+                            <div className="w-full h-px bg-cyan-600" />
 
                             <button
                                 onClick={() => setIsUsersModalOpen(true)}

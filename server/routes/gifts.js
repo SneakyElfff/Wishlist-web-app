@@ -96,4 +96,46 @@ router.post('/:id/unreserve', async (req, res) => {
     }
 });
 
+// Archive a gift
+router.post('/:id/archive', async (req, res) => {
+    try {
+        const gift = await Gift.findById(req.params.id);
+        if (!gift) return res.status(404).json({ message: 'Подарок не найден' });
+        if (gift.archived) return res.status(400).json({ message: 'А все уже' });
+
+        gift.archived = true;
+        gift.reservedBy = '';
+        gift.reserved = false;
+        const updatedGift = await gift.save();
+        res.json(updatedGift);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+// Unarchive a gift
+router.post('/:id/unarchive', async (req, res) => {
+    try {
+        const gift = await Gift.findById(req.params.id);
+        if (!gift) return res.status(404).json({ message: 'Подарок не найден' });
+        if (!gift.archived) return res.status(400).json({ message: 'Так он еще актуален' });
+
+        gift.archived = false;
+        const updatedGift = await gift.save();
+        res.json(updatedGift);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
+// Get archived gifts
+router.get('/archived', async (req, res) => {
+    try {
+        const archivedGifts = await Gift.find({ archived: true }).sort({ updatedAt: -1 });
+        res.json(archivedGifts);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+});
+
 module.exports = router;

@@ -111,7 +111,7 @@ const UserManagementModal = ({ isOpen, onClose }) => {
                                         <button
                                             onClick={() => handleEdit(u)}
                                             className="text-yellow-400 hover:text-yellow-300 transition text-xl"
-                                            title="Редактировать подарок"
+                                            title="Редактировать пользователя"
                                         >
                                             <PencilIcon className="w-5 h-5" />
                                         </button>
@@ -119,7 +119,7 @@ const UserManagementModal = ({ isOpen, onClose }) => {
                                         <button
                                             onClick={() => handleDelete(u)}
                                             className="text-red-400 hover:text-red-300 transition text-xl"
-                                            title="Удалить подарок"
+                                            title="Удалить пользователя"
                                         >
                                             <TrashIcon className="w-5 h-5" />
                                         </button>
