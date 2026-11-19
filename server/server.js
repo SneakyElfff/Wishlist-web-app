@@ -37,9 +37,29 @@ app.get('*', (req, res) => {
 });
 
 // Подключение к MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 10000
+})
+    .then(() => {
+        console.log('[MongoDB] Connected successfully');
+    })
+    .catch(err => {
+        console.error('[MongoDB] Connection failed:', err.message);
+
+        if (err.reason?.servers) {
+            for (const [address, server] of err.reason.servers) {
+                console.error('[MongoDB] Server details:', {
+                    address,
+                    type: server.type,
+                    error: server.error?.message || 'No detailed error'
+                });
+            }
+        }
+
+        if (err.cause) {
+            console.error('[MongoDB] Cause:', err.cause);
+        }
+    });
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
