@@ -6,18 +6,28 @@ const bcrypt = require('bcryptjs');
 router.post('/login', async (req, res) => {
     const { login, password } = req.body;
 
+    console.log('[LOGIN] Request received:', {
+        login,
+        hasPassword: Boolean(password)
+    });
+
     if (!login || !password) {
+        console.log('[LOGIN] Missing credentials');
         return res.status(400).json({ message: 'Ничего не забыли?' });
     }
 
     try {
+        console.log('[LOGIN] Searching user');
         const user = await User.findOne({ login });
+        console.log('[LOGIN] Database query completed:', {
+            userFound: Boolean(user)
+        });
         if (!user) {
             return res.status(401).json({ message: 'Вы кто такие? Я вас не звал'});
         }
 
-        // const isMatch = await bcrypt.compare(password, user.password);
-        const isMatch = user.password !== password;
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log('[LOGIN] Password comparison:', isMatch);
 
         if (!isMatch) {
             return res.status(401).json({ message: 'Вы точно не мошенники?'});
